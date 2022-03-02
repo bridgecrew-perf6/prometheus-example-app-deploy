@@ -1,12 +1,12 @@
 apiVersion: sloth.slok.dev/v1
 kind: PrometheusServiceLevel
 metadata:
-  name: {{ include "prometheus-example-app.fullname" . }}
+  name: {{ include "prometheus-example-app.fullname" . }}-{{ .Values.environment }}
   namespace: monitoring
   labels:
     release: kube-prometheus-stack
 spec:
-  service: "prometheus-example-app-dev"
+  service: "prometheus-example-app"
   labels:
     owner: "myteam"
     repo: "myorg/myservice"
@@ -17,8 +17,8 @@ spec:
       description: "Common SLO based on availability for HTTP request responses."
       sli:
         events:
-          errorQuery: sum(rate(nginx_ingress_controller_requests{status=~"(5..|429|404)",ingress="prometheus-example-app"}[{{`{{.window }}`}}]))
-          totalQuery: sum(rate(nginx_ingress_controller_requests{ingress="prometheus-example-app"}[{{`{{.window }}`}}]))
+          errorQuery: sum(rate(nginx_ingress_controller_requests{status=~"(5..|429|404)",ingress="prometheus-example-app",exported_namespace="{{ .Values.environment }}"}}[{{`{{.window }}`}}]))
+          totalQuery: sum(rate(nginx_ingress_controller_requests{ingress="prometheus-example-app",exported_namespace="{{ .Values.environment }}"}[{{`{{.window }}`}}]))
       alerting:
         name: MyServiceHighErrorRate
         labels:
@@ -42,11 +42,11 @@ spec:
         events:
           errorQuery: |
             (
-              sum(rate(nginx_ingress_controller_response_duration_seconds_count{ingress="prometheus-example-app"}[{{`{{.window }}`}}]))
+              sum(rate(nginx_ingress_controller_response_duration_seconds_count{ingress="prometheus-example-app",,exported_namespace="{{ .Values.environment }}"}}[{{`{{.window }}`}}]))
               -
-              sum(rate(nginx_ingress_controller_response_duration_seconds_bucket{ingress="prometheus-example-app",le="0.5"}[{{`{{.window }}`}}]))
+              sum(rate(nginx_ingress_controller_response_duration_seconds_bucket{ingress="prometheus-example-app",le="0.5",,exported_namespace="{{ .Values.environment }}"}}[{{`{{.window }}`}}]))
             )
-          totalQuery: sum(rate(nginx_ingress_controller_response_duration_seconds_count{ingress="prometheus-example-app"}[{{`{{.window }}`}}]))
+          totalQuery: sum(rate(nginx_ingress_controller_response_duration_seconds_count{ingress="prometheus-example-app",,exported_namespace="{{ .Values.environment }}"}}[{{`{{.window }}`}}]))
       alerting:
         name: MyServiceHighLatency
         labels:

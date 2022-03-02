@@ -1,0 +1,38 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: test-prometheus-example-app-deploy
+  namespace: argocd
+  labels:
+    type: application
+    application: prometheus-example-app
+  annotations:
+    notifications.argoproj.io/subscribe.on-health-degraded-with-graceful-period.slack: prometheus-example-app-deploy;argocd-spam
+    notifications.argoproj.io/subscribe.on-deployed.slack: prometheus-example-app-deploy;argocd-spam
+    notifications.argoproj.io/subscribe.on-sync-out-of-sync.slack: prometheus-example-app-deploy;argocd-spam
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  ignoreDifferences:
+    - group: apps
+      kind: Deployment
+      jsonPointers:
+        - /spec/replicas
+  destination:
+    namespace: test
+    server: https://kubernetes.default.svc
+  syncPolicy:
+    automated: {}
+    syncOptions:
+      - CreateNamespace=true
+  project: default
+  source:
+    path: helm/app/chart/v1.0.0
+    repoURL: https://github.com/marcportabellaclotet-mt/prometheus-example-app-deploy.git
+    targetRevision: HEAD
+    helm:
+      version: v3
+      releaseName: prometheus-example-app
+      valueFiles:
+        - ../../helm-values-files/test/values.yaml
+        - ../../helm-values-files/test/values-tag.yaml

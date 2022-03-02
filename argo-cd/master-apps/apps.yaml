@@ -2,7 +2,7 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: dev-prometheus-example-app
-  namespace: argo-cd
+  namespace: argocd
   labels:
     type: argocd-appconfig
     application: prometheus-example-app
@@ -10,19 +10,19 @@ metadata:
     - resources-finalizer.argocd.argoproj.io
 spec:
   destination:
-    namespace: argo-cd
+    namespace: argocd
     server: https://kubernetes.default.svc
-  project: buy-domain
+  project: default
   source:
-    path: config/argo-cd/applications/dev
-    repoURL: https://github.com/mytheresa/prometheus-example-app-deployment.git
+    path: argo-cd/applications/dev
+    repoURL: https://github.com/marcportabellaclotet-mt/prometheus-example-app-deploy.git
     targetRevision: HEAD
 ---
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: test-prometheus-example-app
-  namespace: argo-cd
+  namespace: argocd
   labels:
     type: argocd-appconfig
     application: buy-domain
@@ -30,19 +30,19 @@ metadata:
     - resources-finalizer.argocd.argoproj.io
 spec:
   destination:
-    namespace: argo-cd
+    namespace: argocd
     server: https://kubernetes.default.svc
-  project: buy-domain
+  project: default
   source:
-    path: config/argo-cd/applications/test
-    repoURL: https://github.com/mytheresa/prometheus-example-app-deployment.git
+    path: argo-cd/applications/test
+    repoURL: https://github.com/marcportabellaclotet-mt/prometheus-example-app-deploy.git
     targetRevision: HEAD
 ---
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: acceptance-prometheus-example-app
-  namespace: argo-cd
+  name: prod-prometheus-example-app
+  namespace: argocd
   labels:
     type: argocd-appconfig
     application: prometheus-example-app
@@ -50,30 +50,10 @@ metadata:
     - resources-finalizer.argocd.argoproj.io
 spec:
   destination:
-    namespace: argo-cd
+    namespace: argocd
     server: https://kubernetes.default.svc
-  project: buy-domain
+  project: default
   source:
-    path: config/argo-cd/applications/acceptance
-    repoURL: https://github.com/mytheresa/prometheus-example-app-deployment.git
-    targetRevision: HEAD
----
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: production-prometheus-example-app
-  namespace: argo-cd
-  labels:
-    type: argocd-appconfig
-    application: prometheus-example-app
-  finalizers:
-    - resources-finalizer.argocd.argoproj.io
-spec:
-  destination:
-    namespace: argo-cd
-    server: https://kubernetes.default.svc
-  project: buy-domain
-  source:
-    path: config/argo-cd/applications/production
-    repoURL: https://github.com/mytheresa/prometheus-example-app-deployment.git
+    path: argo-cd/applications/prod
+    repoURL: https://github.com/marcportabellaclotet-mt/prometheus-example-app-deploy.git
     targetRevision: HEAD
