@@ -1,0 +1,24 @@
+{{- $fullName := include "prometheus-example-app.fullname" . -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "prometheus-example-app.fullname" . }}
+  labels:
+    {{- include "prometheus-example-app.labels" . | nindent 4 }}
+  annotations:
+    {{- if hasKey .Values "cniep" }}
+    {{- if .Values.cniep.enabled }}
+    cniep/deployment: {{ include "prometheus-example-app.fullname" . }}
+    cniep/template: {{ .Values.cniep.template }}
+    cniep/customfield-edermurl: {{ .Values.cniep.edermurl | default nil }}
+    {{- end }}
+    {{- end }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "prometheus-example-app.selectorLabels" . | nindent 6 }}

@@ -1,0 +1,26 @@
+#Global deployment config
+nameOverride: "raccoon"
+fullnameOverride: ""
+
+image:
+  repository: 256612512925.dkr.ecr.eu-central-1.amazonaws.com/raccoon
+  pullPolicy: Always
+  containerPort: 80
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 80
+  portName: http
+
+nodeSelector: {}
+
+replicaCount: 1
+
+ingress: {}
+
+hpa: {}
+
+timeout: 120
+
+podSecurityContext : {}

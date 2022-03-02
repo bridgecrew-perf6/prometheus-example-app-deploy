@@ -1,0 +1,4 @@
+apiVersion: v2
+description: prometheus example app
+name: prometheus-example-app
+version: 1.0.0

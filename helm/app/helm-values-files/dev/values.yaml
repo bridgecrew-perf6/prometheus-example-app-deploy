@@ -1,0 +1,8 @@
+#Global deployment config
+ingress:
+  enabled: true
+  annotations:
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+  hosts:
+    - host: prometheus-example-app.totmicro.com
+      paths: ["/"]

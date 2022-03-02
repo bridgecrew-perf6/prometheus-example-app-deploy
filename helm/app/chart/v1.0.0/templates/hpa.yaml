@@ -1,0 +1,28 @@
+{{- if not .Values.serverless -}}
+{{- $fullName := include "prometheus-example-app.fullname" . -}}
+apiVersion: autoscaling/v2beta2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ $fullName }}
+  labels:
+{{ include "prometheus-example-app.labels" . | indent 4 }}
+spec:
+  scaleTargetRef:
+{{- if .Values.argo_rollout }}
+    apiVersion: argoproj.io/v1alpha1
+    kind: Rollout
+{{- else }}
+    apiVersion: apps/v1
+    kind: Deployment
+{{- end}}
+    name: {{ $fullName }}
+  minReplicas: {{ .Values.hpa.MinReplicaCount |default 1}}
+  maxReplicas: {{ .Values.hpa.MaxReplicaCount |default 1}}
+  metrics:
+  - type: Resource
+    resource:
+      name: {{ .Values.hpa.ResourceName |default "cpu" }}
+      target:
+        type: Utilization
+        averageUtilization: {{ .Values.hpa.ResourceTarget |default 50}}
+{{ end }}
